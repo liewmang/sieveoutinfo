@@ -52,22 +52,91 @@ def sievedate(filename, out_file):
                     k+=1
                 date.append([a, a+28+k])
                 print('appended date ind')
-    for ind in date:
-        dateout.append(s[ind[0]+28:ind[1]])
+        for ind in date:
+            dateout.append(s[ind[0]+28:ind[1]])
         
-    for idx, item in enumerate(dateout):
-      for l in range(len(item)):
-            if item[l:l+4] == " at ":
-                item = item[:l]+","+item[l+4:]
-                dateout[idx] = item
-            if item[l:l+1] == ":":
-                item = item[:l]+item[l+1:]
-                dateout[idx] = item
+        for idx, item in enumerate(dateout):
+            for l in range(len(item)):
+                if item[l:l+4] == " at ":
+                    item = item[:l]+","+item[l+4:]
+                    dateout[idx] = item
+                if item[l:l+1] == ":":
+                    item = item[:l]+item[l+1:]
+                    dateout[idx] = item
             
     df = pd.DataFrame(dateout)
     df.to_excel(out_file,sheet_name = "D&T")
     file.close()
 
+def sievename(filename, out_file):
+    nst = '<img alt="'
+    nen = '" class="'
+    namind = []
+    name = []
+    with open(filename, 'r', encoding="utf8") as file:
+        s = file.read()
+        print(len(s))
+        for a in range(len(s)):
+            if s[a:a+10] == nst:
+                k = 0
+                while s[a+10+k:a+10+k+9] != nen:
+                    k+=1
+                namind.append([a, a+10+k])
+                print('appended name ind')
+        for ind in namind:
+            name.append(s[ind[0]+10:ind[1]])
+        
+    df = pd.DataFrame(name)
+    df.to_excel(out_file,sheet_name = "Username")
+    file.close()
 
+def sievelink(filename, out_file):
+     lst = 'href="https://www.facebook.com/'
+     lend = '?comment_id='
+     lind = []
+     links = []
+     with open(filename, 'r', encoding="utf8") as file:
+        s = file.read()
+        print(len(s))
+
+        for a in range(len(s)):
+            if s[a:a+31] == lst:
+                k = 0
+                while s[a+31+k:a+31+k+12] != lend:
+                    k+=1
+                    if k == 459271:
+                        break
+                lind.append([a, a+31+k])
+                print('appended link ind')
+
+        for ind in lind:
+            links.append(s[ind[0]+6:ind[1]])
+     
+     i = 0
+     n = len(links)             
+     while i < n-1:
+        check = links[i]
+        if check == links[i+1]:
+            del links[i+1]    
+            n -= 1
+        else:
+            i += 1
+    
+     i = 0
+     n = len(links)
+     while i < n:
+         check= links[i]
+         if 'https://www.facebook.com/TenteraDaratMY/posts' in check:
+             del links[i]
+             n -= 1
+         else:
+             i += 1
+
+
+         
+             
+     df = pd.DataFrame(links)        
+     df.to_excel(out_file,sheet_name = "Links")
+     file.close()
 
 
